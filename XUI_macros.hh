@@ -24,10 +24,10 @@ typedef vector<double> vd;
 typedef vector<vd> vvd;
 typedef pair<int,int> pii;
 
-template <typename T> void printContainer(T& a) {
+template <typename T> void printContainer(T& a, int num = 10) {
   auto it = a.begin();
   cout << "{" << *(it++);
-  for(; it!=a.end(); ++it) cout << ", " << (*it);
+  for(int n =0; it!=a.end() && n<num; ++it, ++num) cout << ", " << (*it);
   cout << "}\n";
 }
 
