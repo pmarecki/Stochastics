@@ -34,9 +34,10 @@
 
 int main() {
   //compute stochastic value, and its stddev at end;
-  vd vals;
-  int nTrials = 1e5;
-  int tMax = 4000; // 24 * 30 = 720;
+  vd vals, valS;
+
+  int nTrials = 1e4;
+  int tMax = 1000; // 24 * 30 = 720;
   double sig = 0.1;
   double dt = 1./24;  //twice/Month
   double sq_dt = sqrt(dt);
@@ -44,20 +45,27 @@ int main() {
   GenG gg(time(0));
   START;
   REP(i,nTrials) {
-    double x = 0;
+    double x = 0, S = 1;
     REP(t,tMax) {
       x += - sig * sig * dt/2 + sig * sq_dt * gg.nxtGauss();
+      S += S * sig * sq_dt * gg.nxtGauss();
     }
     vals.push_back(exp(x));
+    valS.push_back(S);
   }
   STOP("simend");
 //  printContainer(vals);
   double avg = accumulate(ALL(vals), 0.0) / vals.SS;
-  printContainer(vals, 10);
   double stDev = 0;
   REP(i,vals.SS) stDev += (vals[i] - avg) * (vals[i] - avg);
   stDev = sqrt(stDev/(vals.SS -1));
   printf("Avg=%f; stdev=%f\n", avg, stDev);
+  printf("----------\n");
+  avg = accumulate(ALL(valS), 0.0) / valS.SS;
+  stDev = 0;
+  REP(i,valS.SS) stDev += (valS[i] - avg) * (valS[i] - avg);
+  stDev = sqrt(stDev/(valS.SS -1));
+  printf("Avg=%f; stdev=%f --- for S\n", avg, stDev);
 
 }
 
