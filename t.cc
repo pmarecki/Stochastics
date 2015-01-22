@@ -38,7 +38,7 @@ int main() {
   int nTrials = 1e4;
   int tMax = 1000; // 24 * 30 = 720;
   double sig = 0.1;
-  double dt = 1./24;  //2xMonth
+  double dt = 1./24;  //twice/Month
   double sq_dt = sqrt(dt);
   double factor = sig*sq_dt;
   GenG gg(time(0));
