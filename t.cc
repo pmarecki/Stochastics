@@ -36,7 +36,7 @@ int main() {
   //compute stochastic value, and its stddev at end;
   vd vals;
   int nTrials = 1e5;
-  int tMax = 4000; // 24 * 30 = 720;
+  int tMax = 9000; // 24 * 30 = 720;
   double sig = 0.1;
   double dt = 1./24;  //twice/Month
   double sq_dt = sqrt(dt);
