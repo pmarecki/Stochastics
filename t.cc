@@ -35,8 +35,8 @@
 int main() {
   //compute stochastic value, and its stddev at end;
   vd vals;
-  int nTrials = 1e4;
-  int tMax = 1000; // 24 * 30 = 720;
+  int nTrials = 1e5;
+  int tMax = 4000; // 24 * 30 = 720;
   double sig = 0.1;
   double dt = 1./24;  //twice/Month
   double sq_dt = sqrt(dt);
@@ -46,13 +46,14 @@ int main() {
   REP(i,nTrials) {
     double x = 0;
     REP(t,tMax) {
-      x += factor * gg.nxtGauss();
+      x += - sig * sig * dt/2 + sig * sq_dt * gg.nxtGauss();
     }
     vals.push_back(exp(x));
   }
   STOP("simend");
 //  printContainer(vals);
   double avg = accumulate(ALL(vals), 0.0) / vals.SS;
+  printContainer(vals, 10);
   double stDev = 0;
   REP(i,vals.SS) stDev += (vals[i] - avg) * (vals[i] - avg);
   stDev = sqrt(stDev/(vals.SS -1));
