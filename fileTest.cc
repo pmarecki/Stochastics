@@ -6,28 +6,32 @@
 */
 
 
-int SZ = 100;
-const char* cacheFileName="/home/tttuuu/ramdrive/test.dat";
+int SZ = 100000000;
+const char* cacheFileName="/home/tttuuu/ramdrive/randomDoubles.dat";
 
 void createFile() {
   FILE* ff; ff = fopen(cacheFileName,"wb");
   double* dane = new double[SZ];
-  REP(i, SZ) dane[i] = i;
+  //generate SZ normal doubles[0,1] here
+  mt19937 genrator(123);  //needs the seed
+  normal_distribution<double> normal(0,1);  //wrapper
+  REP(i, SZ) dane[i] = normal(genrator);
   fwrite(dane, 8, SZ, ff);
   fclose(ff);
   delete[] dane;
 }
 
-void readFile() {
+double* readFile(int nNormals) {
   FILE* ff; ff=fopen(cacheFileName,"rb");
-  double* dane = new double[SZ];
-  fread(dane, 8, SZ, ff);
+  double* dane = new double[nNormals];
+  fread(dane, 8, nNormals, ff);
   fclose(ff);
   REP(i,20) printf("%f\n", dane[i]);
-  delete dane;
+  return dane;
 }
 
 int main() {
-  createFile();
-  readFile();
+//  createFile();
+  double* normals = readFile(3e6);
+  delete normals;
 }
