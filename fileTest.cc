@@ -1,32 +1,33 @@
+#include "XUI_macros.hh"
+#include "gaussian_generator.h"
+
+/**
+* Goal: 2 functions (save 800MB gaussians; load 800MB gaussians) + main with info how to call them.
+*/
+
+
+int SZ = 100;
+const char* cacheFileName="/home/tttuuu/ramdrive/test.dat";
+
 void createFile() {
-  START;
-  FILE* ff;
-  ff = fopen("test.dat","wb");
-  int* dane = new int[SZ];
-  REP(i,SZ) dane[i] = i;
-  fwrite(dane, 4, SZ, ff);
+  FILE* ff; ff = fopen(cacheFileName,"wb");
+  double* dane = new double[SZ];
+  REP(i, SZ) dane[i] = i;
+  fwrite(dane, 8, SZ, ff);
   fclose(ff);
-  ff = fopen("test.dat","rb");
-  int odczytane[10];
-  fseek(ff,120,SEEK_SET);
-  fread(odczytane, 4, 10, ff);    //dest*, #bytes_each, #objects, file*)
-  fclose(ff);
-  STOP(" --> czas zapisu");
+  delete[] dane;
 }
 
-void randomReadFile() {
-  srand(111);
-  ll controlSum = 0;
-  FILE* ff;
-  ff = fopen("test.dat","rb");
-  START;
-  REP(i,RD_CNT) {
-    int which = rand() % SZ;
-    int dst = 0;
-    fseek(ff, which*4, SEEK_SET);
-    fread(&dst, 4, 1, ff);
-    controlSum = (controlSum + dst) % 10007;
-  }
-  STOP(" --> czas odczytu(dysk)");
-  cout << "(control sum:" << controlSum << ")\n";
+void readFile() {
+  FILE* ff; ff=fopen(cacheFileName,"rb");
+  double* dane = new double[SZ];
+  fread(dane, 8, SZ, ff);
+  fclose(ff);
+  REP(i,20) printf("%f\n", dane[i]);
+  delete dane;
+}
+
+int main() {
+  createFile();
+  readFile();
 }
