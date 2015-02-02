@@ -6,7 +6,8 @@
 */
 
 
-int SZ = 100000000;
+
+int SZ = 1e8;
 const char* cacheFileName="/home/tttuuu/ramdrive/randomDoubles.dat";
 
 void createFile() {
