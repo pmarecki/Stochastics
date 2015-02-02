@@ -31,24 +31,49 @@
 /**
 * Testy symulacji stochastycznych;
 */
+const int NTRIALS = 1e3;
+const int TIMESTEPS = 1000; // 24 * 30 = 720;
+
+const int NRANDOMS = NTRIALS * TIMESTEPS;
+double* randoms;
+int idx;
+void preloadRandoms() {
+  mt19937 genMt(time(0));
+  normal_distribution<double> norDis(0,1);
+  randoms = new double[NRANDOMS];
+  REP(i,NRANDOMS) {
+    randoms[i] = norDis(genMt);
+  }
+}
+
 
 int main() {
+  START;
+  preloadRandoms();
+  STOP("gen_random");
+
+  default_random_engine genDefault(time(0));
+  mt19937 genMt(time(0));     //just as fast as Default
+  normal_distribution<double> norDis(0,1);
+//  student_t_distribution<double> studDis(10.0);
+
   //compute stochastic value, and its stddev at end;
   vd vals, valS;
-
-  int nTrials = 1e4;
-  int tMax = 1000; // 24 * 30 = 720;
   double sig = 0.1;
   double dt = 1./24;  //twice/Month
   double sq_dt = sqrt(dt);
-  double factor = sig*sq_dt;
+  double sig_sqrt_dt = sig*sq_dt;
+  double sig_sig_dt_2 = sig * sig * dt / 2;
   GenG gg(time(0));
   START;
-  REP(i,nTrials) {
+  REP(i, NTRIALS) {
     double x = 0, S = 1;
-    REP(t,tMax) {
-      x += - sig * sig * dt/2 + sig * sq_dt * gg.nxtGauss();
-      S += S * sig * sq_dt * gg.nxtGauss();
+    REP(t, TIMESTEPS) {
+//      double num = norDis(genMt);
+      double num = randoms[(++idx)%NRANDOMS];
+      x += - sig_sig_dt_2 + sig_sqrt_dt * num;
+      num = randoms[(++idx)%NRANDOMS];
+      S += S * sig_sqrt_dt * num;
     }
     vals.push_back(exp(x));
     valS.push_back(S);
@@ -67,6 +92,7 @@ int main() {
   stDev = sqrt(stDev/(valS.SS -1));
   printf("Avg=%f; stdev=%f --- for S\n", avg, stDev);
 
+  delete[] randoms;
 }
 
 
